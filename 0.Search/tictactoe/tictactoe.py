@@ -65,15 +65,46 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    win = winner(board)
-    if win == X:
-        return 1
-    if win == O:
-        return -1
-    return 0
+    return 1 if winner(board) == X else -1 if winner(board) == O else 0
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    
+    if terminal(board):
+        return None, utility(board)
+
+    player_turn = player(board)
+    best_action = None
+    if player_turn == X:
+        best_action, _ = max_value(board)
+    else:
+        best_action, _ = min_value(board)
+    return best_action
+
+def max_value(board):
+    if terminal(board):
+        return None, utility(board)
+    v = -math.inf
+    best_action = None
+    for action in actions(board):
+        new_board = result(board, action)
+        _, new_v = min_value(new_board)
+        if new_v > v:
+            v = new_v
+            best_action = action
+    return best_action, v
+
+
+def min_value(board):
+    if terminal(board):
+        return None, utility(board)
+    v = math.inf
+    best_action = None
+    for action in actions(board):
+        new_board = result(board, action)
+        _, new_v = max_value(new_board)
+        if new_v < v:
+            v = new_v
+            best_action = action
+    return best_action, v
